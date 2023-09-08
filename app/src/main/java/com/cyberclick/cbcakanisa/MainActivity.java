@@ -49,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
     private ProgressBar mProgressBar;
-    public ValueCallback<Uri> mUploadMessage;
-    public static final int FILECHOOSER_RESULTCODE = 5173;
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private SwipeRefreshLayout refreshLayout;
@@ -63,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setTitle("CBCA Kanisa");
-        createNotificationChannel();
 
         if(!isConnected(MainActivity.this))buildDialog(MainActivity.this).show();
         else{
@@ -84,14 +81,11 @@ public class MainActivity extends AppCompatActivity {
             webSettings.setDomStorageEnabled(true);
             webSettings.setAllowFileAccess(true);
             webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
-            if(Locale.getDefault().getLanguage() == "fr")
-            {
-                webView.loadUrl("https://cbca-kanisa.org/lang/fr");
-            }
-            else
-            {
-                webView.loadUrl("https://cbca-kanisa.org/lang/en");
-            }
+
+            Intent intent = getIntent();
+            String page_url = intent.getStringExtra("page_url");
+
+            webView.loadUrl(page_url);
 
             webView.setDownloadListener(new DownloadListener() {
                 @Override
@@ -163,15 +157,6 @@ public class MainActivity extends AppCompatActivity {
                 public void onProgressChanged(WebView view, int newProgress) {
                     super.onProgressChanged(view, newProgress);
                 }
-
-                public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
-                    mUploadMessage = uploadMsg;
-                    Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-                    i.addCategory(Intent.CATEGORY_OPENABLE);
-                    i.setType("*/*");
-                    MainActivity.this.startActivityForResult(Intent.createChooser(i, "File Browser"),
-                            FILECHOOSER_RESULTCODE);
-                }
             });
         }
 
@@ -196,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this,AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        long intervalMillis = 10 * 60 * 1000; // repeat every 10 minutes
+        long intervalMillis = 3 * 60 * 1000; // repeat every 3 minutes
         long triggerAtMillis = System.currentTimeMillis() + intervalMillis;
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, triggerAtMillis, intervalMillis, pendingIntent);
 
@@ -252,9 +237,9 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("Oops");
         if(Locale.getDefault().getLanguage() == "fr")
         {
-            builder.setMessage("Veuillez activer les données mobile ou le wifi pour utiliser l'application CBCA Kanisa");
+            builder.setMessage("Veuillez activer les données mobile ou le wifi pour continuer l'utilisation de l'application CBCA Kanisa");
         }else{
-            builder.setMessage("Please switch on Mobile Data or wifi to use CBCA Kanisa the app");
+            builder.setMessage("Please switch on Mobile Data or wifi to continue use the CBCA Kanisa app");
         }
         builder.setPositiveButton("Ok", (dialog, which) -> finish());
 
@@ -277,19 +262,6 @@ public class MainActivity extends AppCompatActivity {
             webView.goBack();
         }else {
             super.onBackPressed();
-        }
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "CBCA Kanisa";
-            String description = "Recherche des nouvelles actualites";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel("updates_channel",name,importance);
-            channel.setDescription(description);
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
         }
     }
 }
