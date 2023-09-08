@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/history_menu"
+        android:title="Historique"/>
+    <item
+        android:id="@+id/vision_menu"
+        android:title="Vision et Mission"/>
+    <item
+        android:id="@+id/mandataires_menu"
+        android:title="Mandataires"/>
+    <item
+        android:id="@+id/departements_menu"
+        android:title="Departements"/>
+    <item
+        android:id="@+id/chriffres_menu"
+        android:title="CBCA en chiffres"/>
+    <item
+        android:id="@+id/donation_menu"
+        android:title="Faire un don"/>
+</menu>
